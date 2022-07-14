@@ -8,8 +8,8 @@ namespace Top_K_Frequent_Elements
     static void Main(string[] args)
     {
       Program p = new Program();
-      var nums = new int[] { 1,0,1,2 };
-      var result = p.TopKFrequent(nums, 2);
+      var nums = new int[] { 3, 0, 1, 0 };
+      var result = p.TopKFrequent(nums, 1);
       Console.WriteLine(string.Join(",", result));
     }
 
@@ -36,17 +36,30 @@ namespace Top_K_Frequent_Elements
       }
     }
 
+    public class Max : IComparer<int>
+    {
+      public int Compare(int a, int b)
+      {
+        if (b > a) return 1;
+        else if (b == a) return 0;
+        else return -1;
+      }
+    }
+
     public int[] TopKFrequent(int[] nums, int k)
     {
       if (nums == null || nums.Length == 0 || k == 0) return new int[0];
       // Create the frequency for each nos.
       var countMap = GetItemFrequency(nums);
-      // Create the maxHeap with max count as k
-      var maxHeap = GetMaxHeap(countMap, k);
-      var res = new List<int>();
-      foreach(var item in maxHeap)
+      PriorityQueue<int, int> pq = new PriorityQueue<int, int>(new Max());
+      foreach(var kvp in countMap)
       {
-        res.Add(item.Value);
+        pq.Enqueue(kvp.Key, kvp.Value);
+      }
+      var res = new List<int>();
+      while (k-- > 0)
+      {
+        res.Add(pq.Dequeue());
       }
       return res.ToArray();
     }
